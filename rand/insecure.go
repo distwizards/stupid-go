@@ -23,48 +23,37 @@ var (
 	src = rand.NewSource(time.Now().UnixNano())
 )
 
+func init() {
+	// Set the random seed for the default functions
+	rand.Seed(time.Now().UnixNano())
+}
+
 // This optimized version is heavily based off of this wonderful Stack Overflow
 // answer:
 // https://stackoverflow.com/questions/22892120/how-to-generate-a-random-string-of-a-fixed-length-in-go
 
-// InsecureRand returns a random string of the specified length that is
+// StringUnsafe returns a random string of the specified length that is
 // sufficiently random for use in identifiers but should not ever be used to
-// seed cryptographic operations. This should not be used concurrently
-func InsecureRand(n int) string {
-	b := make([]byte, n)
-	bitCache := src.Int63()
-	remainingReads := numReads
-	for i := 0; i < n; {
-		// If we are out of bits, read again
-		if remainingReads == 0 {
-			bitCache = src.Int63()
-			remainingReads = numReads
-		}
-		// Because we may have one extra bit, the index could be out of range.
-		// If it is in range, use it. Otherwise, throw away
-		if index := int(bitCache & indexMask); index < len(letters) {
-			b[i] = letters[index]
-			i++
-		}
-
-		remainingReads--
-		// shift off the number of bits we used
-		bitCache >>= indexBits
-	}
-	return string(b)
+// seed cryptographic operations. It is not safe to use concurrently
+func StringUnsafe(n int) string {
+	return getString(n, src.Int63)
 }
 
-// InsecureRandSafe returns a random string of the specified length that is
+// String returns a random string of the specified length that is
 // sufficiently random for use in identifiers but should not ever be used to
 // seed cryptographic operations. It is safe to use concurrently
-func InsecureRandSafe(n int) string {
+func String(n int) string {
+	return getString(n, rand.Int63)
+}
+
+func getString(n int, f func() int64) string {
 	b := make([]byte, n)
-	bitCache := rand.Int63()
+	bitCache := f()
 	remainingReads := numReads
 	for i := 0; i < n; {
 		// If we are out of bits, read again
 		if remainingReads == 0 {
-			bitCache = rand.Int63()
+			bitCache = f()
 			remainingReads = numReads
 		}
 		// Because we may have one extra bit, the index could be out of range.

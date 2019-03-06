@@ -4,84 +4,104 @@ import (
 	"testing"
 )
 
-func TestInsecureRand(t *testing.T) {
+func TestStringUnsafe(t *testing.T) {
+	// Yes, this test is not entirely statistically sound, but it provides some
+	// basic validation that it isn't returning the same string. Also, the
+	// math/rand package is fully tested against statistical distributions,
+	// meaning we should be safe in assuming we get sufficiently random data
+	// here
 	expectedLen := 10
+	var existingMap = make(map[string]bool)
 	// Run this a few times to make sure it isn't a fluke
-	for i := 0; i < 5; i++ {
-		val := InsecureRand(expectedLen)
+	for i := 0; i < 50; i++ {
+		val := StringUnsafe(expectedLen)
 		if len(val) != expectedLen {
 			t.Errorf("Expected string of length %d, got %d", expectedLen, len(val))
 		}
+		if existingMap[val] {
+			t.Error("Found preexisting string of the same value")
+		}
+		existingMap[val] = true
 	}
 }
 
-func TestInsecureRandSafe(t *testing.T) {
+func TestString(t *testing.T) {
+	// Yes, this test is not entirely statistically sound, but it provides some
+	// basic validation that it isn't returning the same string. Also, the
+	// math/rand package is fully tested against statistical distributions,
+	// meaning we should be safe in assuming we get sufficiently random data
+	// here
 	expectedLen := 10
+	var existingMap = make(map[string]bool)
 	// Run this a few times to make sure it isn't a fluke
-	for i := 0; i < 5; i++ {
-		val := InsecureRandSafe(expectedLen)
+	for i := 0; i < 50; i++ {
+		val := String(expectedLen)
 		if len(val) != expectedLen {
 			t.Errorf("Expected string of length %d, got %d", expectedLen, len(val))
 		}
+		if existingMap[val] {
+			t.Error("Found preexisting string of the same value")
+		}
+		existingMap[val] = true
 	}
 }
 
-func BenchmarkInsecureRand10(b *testing.B) {
+func BenchmarkStringUnsafe10(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		InsecureRand(10)
+		StringUnsafe(10)
 	}
 }
 
-func BenchmarkInsecureRand100(b *testing.B) {
+func BenchmarkStringUnsafe100(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		InsecureRand(100)
+		StringUnsafe(100)
 	}
 }
 
-func BenchmarkInsecureRand1000(b *testing.B) {
+func BenchmarkStringUnsafe1000(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		InsecureRand(1000)
+		StringUnsafe(1000)
 	}
 }
 
-func BenchmarkInsecureRand10000(b *testing.B) {
+func BenchmarkStringUnsafe10000(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		InsecureRand(10000)
+		StringUnsafe(10000)
 	}
 }
 
-func BenchmarkInsecureRand100000(b *testing.B) {
+func BenchmarkStringUnsafe100000(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		InsecureRand(100000)
+		StringUnsafe(100000)
 	}
 }
 
-func BenchmarkInsecureRandSafe10(b *testing.B) {
+func BenchmarkString10(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		InsecureRandSafe(10)
+		String(10)
 	}
 }
 
-func BenchmarkInsecureRandSafe100(b *testing.B) {
+func BenchmarkString100(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		InsecureRandSafe(100)
+		String(100)
 	}
 }
 
-func BenchmarkInsecureRandSafe1000(b *testing.B) {
+func BenchmarkString1000(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		InsecureRandSafe(1000)
+		String(1000)
 	}
 }
 
-func BenchmarkInsecureRandSafe10000(b *testing.B) {
+func BenchmarkString10000(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		InsecureRandSafe(10000)
+		String(10000)
 	}
 }
 
-func BenchmarkInsecureRandSafe100000(b *testing.B) {
+func BenchmarkString100000(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		InsecureRandSafe(100000)
+		String(100000)
 	}
 }
