@@ -5,27 +5,15 @@ import (
 )
 
 func TestStringUnsafe(t *testing.T) {
-	// Yes, this test is not entirely statistically sound, but it provides some
-	// basic validation that it isn't returning the same string. Also, the
-	// math/rand package is fully tested against statistical distributions,
-	// meaning we should be safe in assuming we get sufficiently random data
-	// here
-	expectedLen := 10
-	var existingMap = make(map[string]bool)
-	// Run this a few times to make sure it isn't a fluke
-	for i := 0; i < 50; i++ {
-		val := StringUnsafe(expectedLen)
-		if len(val) != expectedLen {
-			t.Errorf("Expected string of length %d, got %d", expectedLen, len(val))
-		}
-		if existingMap[val] {
-			t.Error("Found preexisting string of the same value")
-		}
-		existingMap[val] = true
-	}
+	randStringTest(t, StringUnsafe)
 }
 
 func TestString(t *testing.T) {
+	randStringTest(t, String)
+}
+
+func randStringTest(t *testing.T, f func(int) string) {
+	t.Helper()
 	// Yes, this test is not entirely statistically sound, but it provides some
 	// basic validation that it isn't returning the same string. Also, the
 	// math/rand package is fully tested against statistical distributions,
@@ -35,7 +23,7 @@ func TestString(t *testing.T) {
 	var existingMap = make(map[string]bool)
 	// Run this a few times to make sure it isn't a fluke
 	for i := 0; i < 50; i++ {
-		val := String(expectedLen)
+		val := f(expectedLen)
 		if len(val) != expectedLen {
 			t.Errorf("Expected string of length %d, got %d", expectedLen, len(val))
 		}
